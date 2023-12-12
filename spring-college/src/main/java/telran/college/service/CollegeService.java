@@ -2,22 +2,15 @@ package telran.college.service;
 
 import java.util.List;
 
-import telran.college.dto.LecturerHours;
-import telran.college.dto.MarksStudent;
-import telran.college.dto.StudentMark;
+import telran.college.dto.*;
 
 public interface CollegeService {
-
 	List<String> bestStudentsSubjectType(String type, int nStudents);
-
-	List<StudentMark> studentsAvgMarks();
-	List<StudentMark> studentsHaveMarkLessThen(int score);
-	List<StudentMark> studentsByMonthNumber(int monthNumber);
-	
-	List<LecturerHours> mostLecturersWorkedHours(int nLecturers);
-	
-	List<MarksStudent> allMarksByStudentName(String name);
-	
-	List<LecturerHours> allLecturersByCity(String city);
+	List<NameScore> studentsAvgMarks();
+	List<LecturerHours> lecturersMostHours(int nLecturers);
+	List<StudentCity> studentsScoresLess(int nThreshold);
+	List<NamePhone> studentsBurnMonth(int month);
+	List<NamePhone> lecturersCity(String city); 
+	List<SubjectNameScore> subjectsScores(String studentName);
 	
 }

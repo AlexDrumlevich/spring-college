@@ -11,16 +11,12 @@ import lombok.NoArgsConstructor;
 @Getter
 public abstract class Person {
 	@Id
-	long id;
-	
+   long id;
 	@Column(nullable = false)
 	String name;
-
 	@Temporal(TemporalType.DATE)
 	@Column(nullable = false, name = "birth_date")
 	LocalDate birthDate;
-	
 	String city;
-	
 	String phone;
 }
