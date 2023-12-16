@@ -29,5 +29,13 @@ List<StudentCity> findStudentsScoresLess(int scoresThreshold);
 		+ "group by student.name order by avg(score) desc")
 List<NameScore> studentsMarks();
 
+@Query("DELETE from Mark where subject.id = :id")
+void deleteMarkContainsSubjectId(long id);
 
+@Query("DELETE from Mark where student.id = :id")
+void deleteMarkContainsStudentId(long id);
+
+
+List<Mark> findByStudentId(long studentId);
+List<Mark> findBySubjectId(long subjectId);
 }
