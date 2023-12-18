@@ -1,5 +1,7 @@
 package telran.college.service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +9,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import telran.college.dto.*;
 import telran.college.entities.Lecturer;
@@ -23,6 +27,7 @@ public class CollegeServiceImpl implements CollegeService {
 	final LecturerRepo lecturerRepo;
 	final SubjectRepo subjectRepo;
 	final MarkRepo markRepo;
+	final EntityManager em;
 
 	@Override
 	public Optional<Student> getStudentById(long id) {
@@ -33,7 +38,7 @@ public class CollegeServiceImpl implements CollegeService {
 	public Optional<Lecturer> getLecturerById(long id) {
 		return lecturerRepo.findById(id);
 	}
-	
+
 	@Override
 	public Optional<Subject> getSubjectById(long id) {
 		return subjectRepo.findById(id);
@@ -173,28 +178,71 @@ public class CollegeServiceImpl implements CollegeService {
 		//find Subject by id (with possible NotFoundException)
 		Subject subject = subjectRepo.findById(id)
 				.orElseThrow(() -> new NotFoundException(String.format("lecturer with %d  not exists", id)));
-		
+
 		// delete all marks with the subject - onDelete = Cascade
-		
+
 		//delete subject
 		subjectRepo.delete(subject);
-		
+
 		//returns subject.build();
 		return subject.build();
 	}
-	
-	
+
+
 	@Override
 	@Transactional(readOnly = false)
 	public List<PersonDto> deleteStudentsHavingScoresLess(int nScores) {
 		// TODO Auto-generated method stub
-		
+
 		List<Student> students = studentRepo.findStudentsHavingScoresLess(nScores);
 		return students.stream().map(student -> {
 			studentRepo.delete(student);
 			return student.build();
 		}).toList();
-	
+
 	}
 
+	@Override
+	public List<String> anyQuery(QueryDto queryDto) {
+		String queryStr = queryDto.query();
+		List<String> res = null;
+		Query query;
+		try {
+			query = queryDto.queryType() == QueryType.SQL ?
+					em.createNativeQuery(queryStr) : em.createQuery(queryStr);
+			res = getResult(query);
+		} catch (Throwable e) {
+			res = List.of(e.getMessage());
+		}
+		return res;
+	}
+	@SuppressWarnings("unchecked")
+	private List<String> getResult(Query query) {
+		List<String> res = Collections.emptyList();
+		List<?> resultList = Collections.emptyList();
+		try {
+			resultList = query.getResultList();
+		} catch (Exception e) {
+			res = List.of(e.getMessage());
+		}
+
+		if (!resultList.isEmpty()) {
+			res = resultList.get(0).getClass().isArray() ?
+					listObjectArraysProcessing((List<Object[]>)resultList) : 
+						listObjectsProcessing(resultList);
+		}
+		return res;
+	}
+	private List<String> listObjectsProcessing(List<?> resultList) {
+
+		try {
+			return resultList.stream().map(Object::toString).toList();
+		} catch (Exception e) {
+			return List.of(e.getMessage());
+		}
+	}
+	private List<String> listObjectArraysProcessing(List<Object[]> resultList) {
+
+		return resultList.stream().map(Arrays::deepToString).toList();
+	}
 }

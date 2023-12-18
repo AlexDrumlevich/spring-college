@@ -43,5 +43,8 @@ public class Subject {
 		return "Subject [id=" + id + ", name=" + name + ", hours=" + hours + ", lecturer=" + lecturer.name + ", type=" + type
 				+ "]";
 	}
+	
+	
+	
 
 }

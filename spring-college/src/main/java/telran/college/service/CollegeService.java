@@ -31,4 +31,6 @@ public interface CollegeService {
 	SubjectDto deleteSubject(long id);
 	List<PersonDto> deleteStudentsHavingScoresLess(int nScores);
 	
+	List<String> anyQuery(QueryDto queryDto);
+	
 }
