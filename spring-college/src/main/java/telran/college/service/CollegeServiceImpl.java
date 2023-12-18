@@ -3,7 +3,6 @@ package telran.college.service;
 import java.util.List;
 import java.util.Optional;
 
-import javax.naming.spi.DirStateFactory.Result;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,11 +157,7 @@ public class CollegeServiceImpl implements CollegeService {
 		Lecturer lecturer = lecturerRepo.findById(id)
 				.orElseThrow(() -> new NotFoundException(String.format("lecturer with %d  not exists", id)));
 
-		//find all subjects with a given lecturer
-		List<Subject> subjects = subjectRepo.findByLecturer(lecturer);
-
-		// update all subjects with being deleted lecturer by setting null in field Lecturer
-		subjects.stream().forEach(subject -> subject.setLecturer(null));
+		//OnDelete - Set null
 
 		//lecturerRepo.delete(lecturer)
 		lecturerRepo.delete(lecturer);
@@ -179,9 +174,7 @@ public class CollegeServiceImpl implements CollegeService {
 		Subject subject = subjectRepo.findById(id)
 				.orElseThrow(() -> new NotFoundException(String.format("lecturer with %d  not exists", id)));
 		
-		// delete all marks with the subject
-		//markRepo.deleteMarkContainsSubjectId(id);
-		markRepo.findBySubjectId(id).stream().forEach(mark -> markRepo.delete(mark));
+		// delete all marks with the subject - onDelete = Cascade
 		
 		//delete subject
 		subjectRepo.delete(subject);
@@ -198,8 +191,6 @@ public class CollegeServiceImpl implements CollegeService {
 		
 		List<Student> students = studentRepo.findStudentsHavingScoresLess(nScores);
 		return students.stream().map(student -> {
-			//markRepo.deleteMarkContainsStudentId(student.getId());
-			markRepo.findByStudentId(student.getId()).stream().forEach(mark -> markRepo.delete(mark));
 			studentRepo.delete(student);
 			return student.build();
 		}).toList();
