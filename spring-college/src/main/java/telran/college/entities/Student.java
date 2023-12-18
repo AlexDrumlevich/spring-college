@@ -10,4 +10,10 @@ public class Student extends Person {
 	public Student(PersonDto personDto) {
 		super(personDto);
 	}
+	
+	@Override
+	public String toString() {
+		return "Student [id=" + id + ", name=" + name + ", birthDate=" + birthDate + ", city=" + city + ", phone=" + phone
+				+ "]";
+	}
 }

@@ -30,9 +30,15 @@ public class Mark {
 	@Column(nullable = false)
 	int score;
 
+	@Override
+	public String toString() {
+		return "Mark [id=" + id + ", student=" + student.name + ", subject=" + subject.name + ", score=" + score + "]";
+	}
+	
 	public MarkDto build() {
 		return new MarkDto(student.getId(), subject.getId(), score);
 	}
+	
 	
 
 }
